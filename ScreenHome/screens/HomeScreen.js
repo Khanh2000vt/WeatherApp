@@ -10,6 +10,7 @@ import {
   Image,
   Dimensions,
   Modal,
+  ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
 import Details from './component/Details';
@@ -19,28 +20,14 @@ const APIKEY = '1ab622d7b5732550a1ba64acf09920cf';
 
 export default function HomeScreen({navigation}) {
   // useState hooks
+  const [homeData, setHomeData] = useState([]);
   const [weather, setWeather] = useState([]);
   const [detailsWeather, setDetailsWeather] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [sevenWeathers, setSevenWeathers] = useState([]);
   const [hourly, setHourly] = useState([]);
-  const [location, setLocation] = useState([]);
-  const [launch, setLaunch] = useState(false);
   // useEffect hook
   useEffect(() => {
-    const fetchCurrentData = async () => {
-      const result = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${location.render.lat}&lon=${location.render.lon}&appid=${APIKEY}`,
-      )
-      return result;
-    };
-    const fetch7Day = async () => {
-      const result = await axios(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${location.render.lat}&lon=${location.render.lon},&appid=${APIKEY}`,
-      )
-      return result;
-    }
-
     const fetchHomeData = async () => {
       try {
         const dataLocation = await fetch (
@@ -56,60 +43,52 @@ export default function HomeScreen({navigation}) {
     fetchHomeData()
     .then(response => response.json())
     .then(data => {
-      setLocation(data);
-      console.log(data);
-
-////
-      fetchCurrentData()
-      .then(response => response.json)
-      .then(result => {
-        setWeather(result);
-          console.log("weather data:" + result);
+      setHomeData(data.current);
+      const weather = data.current.weather;
+      setWeather(weather);
+          console.log("weather data:" + weather);
           const details = [
             {
               icon: 'thermometer-full',
               title: 'Feel like',
-              data: (result.main.feels_like - 273.15).toFixed(0),
+              data: (Math.ceil(weather.main.feels_like - 273.15)).toFixed(0),
             },
             {
               icon: 'wind',
               title: 'Wind',
-              data: `${(result.wind.speed * 10).toFixed(1)} km/h`,
+              data: `${(weather.wind.speed * 10).toFixed(1)} km/h`,
             },
             {
               icon: 'eye',
               title: 'Visibility',
-              data: `${(result.visibility / 1000).toFixed(1)} km`,
+              data: `${(weather.visibility / 1000).toFixed(1)} km`,
             },
             {
               icon: 'feather',
               title: 'Min - Max',
-              data: `${result.main.temp_min - 273.15} - ${
-                result.main.temp_max - 273.15
+              data: `${Math.floor(weather.main.temp_min - 273.15)} - ${
+                Math.ceil(weather.main.temp_max - 273.15)
               }`,
             },
             {
               icon: 'smog',
               title: 'Humidity',
-              data: `${result.main.humidity} %`,
+              data: `${weather.main.humidity} %`,
             },
             {
               icon: 'umbrella',
               title: 'Sea Level',
-              data: `${result.main.sea_level}`,
+              data: `${weather.main.sea_level}`,
             },
           ];
           setDetailsWeather(details);
-      });
 
-      fetch7Day()
-      .then(response => response.json())
-      .then(result2 => {
-        console.log(result2.data);
-        let dailyArray = result2.data.list.filter(item => {
+          const forecast = data.current.forecast;
+        console.log(forecast);
+        let dailyArray = forecast.list.filter(item => {
           return item.dt_txt.slice(11, 13) === '03';
         });
-        let hourlyArray = result2.data.list.filter(item => {
+        let hourlyArray = forecast.list.filter(item => {
           const today = new Date();
           let newString = item.dt_txt.slice(8, 10)
           return  newString == today.getDate() ;
@@ -117,7 +96,7 @@ export default function HomeScreen({navigation}) {
         setHourly(hourlyArray);
         console.log("Thoi tiet theo gio:" + hourlyArray);
         setSevenWeathers(dailyArray);
-      });
+        console.log("Thoi tiet theo ngay:" + dailyArray);
     })
     .catch(err => {
       console.log(err)
@@ -150,7 +129,7 @@ export default function HomeScreen({navigation}) {
             showsVerticalScrollIndicator={false}
             style={{backgroundColor: 'rgb(246,235,216)'}}>
             <View style={styles.homeScreen}>
-              <Text style={styles.titleLocal}>{location.current.name}</Text>
+              <Text style={styles.titleLocal}>{weather.name}</Text>
               <View
                 style={{
                   display: 'flex',
@@ -298,12 +277,8 @@ export default function HomeScreen({navigation}) {
             </View>
           </ScrollView>
         ) : (
-          <View style={styles.loadingScreen}>
-        <Text style={{color: '#fff', fontSize: 13}}> Đang tải dữ liệu</Text>
-        <Text style={{color: '#fff', fontSize: 13}}>
-          {' '}
-          Xin chờ trong giây lát
-        </Text>
+          <View style={{display:'flex',height:height, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" color="#ed6c78" />
       </View>
         )}
       </View>
