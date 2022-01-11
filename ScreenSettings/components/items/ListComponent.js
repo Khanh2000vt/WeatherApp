@@ -1,0 +1,76 @@
+/* eslint-disable prettier/prettier */
+import React, {useContext} from 'react';
+import {TouchableHighlight, Text, View, StyleSheet} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { ThemeContext } from '../../../components/store/ThemeContext';
+export default function ListComponent(props) {
+  const DARK = '#242526';
+  const LIGHT = '#fff';
+  const context = useContext(ThemeContext); // context
+  const isLight = context.isLight;
+
+  function handleOnPress() {
+    props.onPress();
+  }
+  return (
+    <TouchableHighlight
+      onPress={handleOnPress}
+      activeOpacity={0.7}
+      underlayColor="#DDDDDD">
+      <View style={[styles.containerItem, {backgroundColor: isLight ? LIGHT : DARK}]}>
+        <View style={styles.container}>
+          <Ionicons
+            name={props.icon}
+            size={20}
+            color="gray"
+            style={styles.icon}
+          />
+          <View style={styles.textContainer}>
+            <Text style={[styles.textItem, {color: isLight ? DARK : LIGHT}]}>{props.title}</Text>
+            <Text style={styles.textOptionSelected}>{props.option}</Text>
+          </View>
+        </View>
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color="gray"
+          style={styles.chevron}
+        />
+      </View>
+    </TouchableHighlight>
+  );
+}
+
+const styles = StyleSheet.create({
+  containerItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+  },
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  icon: {
+    alignSelf: 'center',
+  },
+  textContainer: {
+    marginLeft: 20,
+  },
+  textItem: {
+    fontSize: 18,
+  },
+  textOptionSelected: {
+    // alignSelf: 'flex-end',
+    fontSize: 10,
+    fontStyle: 'italic',
+    color: 'gray',
+    marginLeft: 10,
+  },
+  chevron: {
+    alignSelf: 'center',
+  },
+  itemEven: {
+    backgroundColor: '#fafafa',
+  },
+});
