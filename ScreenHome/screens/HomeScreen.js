@@ -161,7 +161,7 @@ export default function HomeScreen({navigation}) {
                     <Details
                       icon={item.icon}
                       title={item.title}
-                      data={item.data}
+                      data= {item.data}
                       key={index}
                     />
                   );
