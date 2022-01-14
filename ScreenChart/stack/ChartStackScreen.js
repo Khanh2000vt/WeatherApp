@@ -1,17 +1,16 @@
-/* eslint-disable prettier/prettier */
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ChartScreen from '../screens/ChartScreen';
-const Stack = createNativeStackNavigator();
+import MiddleStack from '../screens/MiddleStack'
+const ChartStack = createNativeStackNavigator();
 export default function ChartStackScreen() {
   return (
-    // Tắt tên title
-    <Stack.Navigator>
-      <Stack.Screen
-        name="ChartScreen"
-        component={ChartScreen}
+    <ChartStack.Navigator>
+      <ChartStack.Screen
+        name="MiddleStack"
+        component={MiddleStack}
         options={{headerShown: false}}
       />
-    </Stack.Navigator>
+    </ChartStack.Navigator>
   );
 }

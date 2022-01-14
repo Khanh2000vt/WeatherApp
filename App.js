@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Geolocation from '@react-native-community/geolocation';
 import {
   HomeStackScreen,
   FavoriteStackScreen,
@@ -10,7 +11,28 @@ import {
   SettingsStackScreen,
 } from './components/store/index';
 const Tab = createBottomTabNavigator();
+function putCurrentLocation(lat, lon){
+  let putObject = {
+    lat,
+    lon
+  }
+  fetch('https://weather-api-2021-100eggs.herokuapp.com/current', {
+    method: 'PUT',
+    headers: {
+        'Content-Type':'application/json' 
+    },
+    body: JSON.stringify(putObject)
+})
+}
 export default function App() {
+  Geolocation.getCurrentPosition( 
+    (data) => {
+      putCurrentLocation(data.coords.latitude, data.coords.longitude);
+  }, 
+  (error) => {
+    console.warn('request location error', error)
+  },
+  {enableHighAccuracy: true, timeout:20000})
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -42,7 +64,7 @@ export default function App() {
         })}>
         <Tab.Screen name="Home" component={HomeStackScreen} />
         <Tab.Screen name="Favorite" component={FavoriteStackScreen} />
-        <Tab.Screen name="Map" component={MapStackScreen} />
+        {/* <Tab.Screen name="Map" component={MapStackScreen} /> */}
         <Tab.Screen name="Chart" component={ChartStackScreen} />
         <Tab.Screen name="Settings" component={SettingsStackScreen} />
       </Tab.Navigator>
