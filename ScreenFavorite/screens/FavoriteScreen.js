@@ -93,6 +93,7 @@ export default function FavoriteScreen() {
   const [lon, setLon] = useState('');
   const [launch, setLaunch] = useState(false);
   const [reload, setReload] = useState(false);
+  const ref_input = useRef();
 
   const [selectedPicker, setSelectedPicker] = useState();
   useEffect(() => {
@@ -164,21 +165,22 @@ export default function FavoriteScreen() {
           flex: 1,
           flexDirection: 'column',
           padding: 10,
-          backgroundColor: 'rgb(246,235,216)',
+          backgroundColor: '#7C99AC',
         }}>
         <Text
           style={{
             marginTop: 10,
             marginBottom: 10,
             marginLeft: 10,
+            fontWeight:'bold',
             fontSize: 15,
-            color: '#33539e',
+            color: '#fff',
           }}>
           Launch Location
         </Text>
         <TouchableOpacity style={styles.oneFavorite}>
           <View style={styles.containTitle}>
-            <Text style={{color: '#000', fontSize: 20}}>
+            <Text style={{color: '#000', fontSize: 20, fontWeight:'bold'}}>
               {currentPlace.weather.name}
             </Text>
           </View>
@@ -271,20 +273,22 @@ export default function FavoriteScreen() {
             marginLeft: 10,
             marginBottom: 10,
             fontSize: 15,
-            color: '#33539e',
+            fontWeight:'bold',
+            color: '#fff',
           }}>
           Favorite Places
         </Text>
         {favoritePlaces.map(place => {
           return (
             <TouchableOpacity
+            key={place.weather.name}
               style={styles.oneFavorite}
               onPress={() => {
                 setShowModalData(true);
                 setDataModal(place);
               }}>
               <View style={styles.containTitle}>
-                <Text style={{color: '#000', fontSize: 20}}>
+                <Text style={{color: '#000', fontSize: 20, fontWeight:'bold'}}>
                   {place.weather.name}
                 </Text>
               </View>
@@ -389,6 +393,7 @@ export default function FavoriteScreen() {
             width: '100%',
             height: 40,
             marginBottom: 10,
+            marginTop:20,
             alignItems: 'center',
           }}>
           <TouchableOpacity
@@ -436,7 +441,7 @@ export default function FavoriteScreen() {
             onRequestClose={_ => {
               console.log('Close');
             }}>
-            <View style={{backgroundColor: ' rgba(0,0,0,0.6)'}}>
+            <ScrollView style={{backgroundColor: ' rgba(0,0,0,0.6)'}}>
               <TouchableOpacity
                 style={{width: width, height: 0.45 * height}}
                 onPress={_ => setShowModalAdd(false)}></TouchableOpacity>
@@ -480,6 +485,7 @@ export default function FavoriteScreen() {
                   placeholder="Input Lat ..."
                   style={{paddingLeft: 10, borderWidth: 1, borderColor: 'red'}}
                   onChangeText={text => setLat(text)}
+                  onEndEditing={()=> ref_input.current.focus()}
                 />
                 <TextInput
                   inlineImageLeft="search_icon"
@@ -491,6 +497,7 @@ export default function FavoriteScreen() {
                     borderWidth: 1,
                     borderColor: 'red',
                   }}
+                  ref={ref_input}
                 />
                 <View
                   style={{
@@ -520,7 +527,7 @@ export default function FavoriteScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </ScrollView>
           </Modal>
         </View>
       </ScrollView>
@@ -545,7 +552,7 @@ const styles = StyleSheet.create({
     height: 100,
     width: '100%',
     borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     position: 'relative',
     marginBottom: 10,
   },
@@ -555,7 +562,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: '#ed6c78',
     marginBottom: 10,
-    display: 'flex',
+    display: 'flex', 
     alignItems: 'center',
     justifyContent: 'center',
     cursor: "pointer','",

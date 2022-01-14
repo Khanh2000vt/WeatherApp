@@ -62,22 +62,23 @@ export default function ChartScreen(props) {
   return (
     <View style={styles.container}>
       {typeof forecast != 'undefined' ? (
-      <ScrollView style={{paddingLeft:5}} 
+      <ScrollView 
       showsVerticalScrollIndicator={false}>
+      
+      <View style={styles.containerDaily}>
       <View style={styles.containerName}>
         <View style={styles.containerTextName}>
         <Text style={styles.textName}>{name}</Text>
         </View>
       </View>
-      <View style={styles.containerDaily}>
         <VictoryChart width={width - 20} height={height/3} theme={VictoryTheme.material}>
       {activeDailyChart === "Bar" ? (<VictoryBar 
       style={{ labels: { fill: "white" } }}
         alignment="start"
         style={{
           data:{
-            fill:'#c43a31',
-            width:15,
+            fill:'hotpink',
+            width:30,
           }
         }}
         animate
@@ -90,7 +91,7 @@ export default function ChartScreen(props) {
         data={dailyArray} x="ngay" y="temp"/>
         )}
       </VictoryChart>
-      <Text style={{textAlign: 'center', fontSize: 15, color:'#000'}}>Biểu đồ thời tiết 5 ngày tiếp theo</Text>
+      <Text style={{textAlign: 'center', fontSize: 15, color:'#000'}}>Biểu đồ nhiệt độ 5 ngày tiếp theo</Text>
       {activeDailyChart === "Bar" ? (<View style={styles.containButton}>
         <TouchableOpacity style={styles.containButtonTextActive}
         onPress={() => {
@@ -114,27 +115,27 @@ export default function ChartScreen(props) {
       </View>
 
       {/*  */}
-      <View style={styles.containerDaily}>
+      <View style={styles.containerHourly}>
       <VictoryChart width={width} height={height / 3} theme={VictoryTheme.material}>
       {activeHourlyChart === "Bar" ? (<VictoryBar 
         horizontal
         alignment="start"
         style={{
           data:{
-            fill:'#c43a31',
+            fill:'#FFAD60',
             width:15,
           }
         }}
         animate
         data={hourlyArray} x="gio" y="temp"/>) : (<VictoryLine
         style={{
-          data: { stroke: "#c43a31" },
+          data: { stroke: "#EA5C2B" },
         }}
           animate
           data={hourlyArray} x="gio" y="temp"/>)}
       </VictoryChart>
 
-      <Text style={{textAlign: 'center', fontSize: 15, color:'#000'}}>Biểu đồ thời tiết hàng giờ</Text>
+      <Text style={{textAlign: 'center', fontSize: 15, color:'#000'}}>Biểu đồ nhiệt độ trong ngày</Text>
       {activeHourlyChart === "Bar" ? (<View style={styles.containButton}>
         <TouchableOpacity style={styles.containButtonTextActive}
         onPress={() => {
@@ -156,7 +157,7 @@ export default function ChartScreen(props) {
       )}
       
       </View>
-      <View style={{marginTop:20, position:'relative'}}>
+      <View style={{marginTop:20, position:'relative', paddingVertical:20, backgroundColor: '#E4EFE7'}}>
       <VictoryPie data={AQI1} 
       width={width}
       height={height/3}
@@ -168,7 +169,6 @@ export default function ChartScreen(props) {
       colorScale={["powderblue", "orange", "gold", "pink", "navy" ]}
       />
       <Text style={{textAlign: 'center', fontSize: 20, color:'#000'}}>AQI: {getTextFromAQI(props?.data?.AQI.list[0].main.aqi)}</Text>
-      </View>
       <View style={{display:'flex', alignItems: 'center', justifyContent: 'center'}}>
         {props?.data?.AQI.list[0].main.aqi == 5 && (
             <View
@@ -211,6 +211,7 @@ export default function ChartScreen(props) {
               }}></View>
           )}
       </View>
+      </View>
       
     </ScrollView>
     ) : (
@@ -223,12 +224,18 @@ export default function ChartScreen(props) {
 }
 
 const styles= StyleSheet.create({
-  container: {flex:1, backgroundColor: 'rgb(246,235,216)', padding:10},
+  container: {flex:1, backgroundColor: '#f7f7f7'},
   containerName: {display: 'flex', justifyContent: 'center', alignItems: 'center'},
-  containerTextName: {height: 40,backgroundColor:'#fff',display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft:20, paddingRight:20, borderRadius:20},
-  textName: {color:'#000', fontSize: 20},
+  containerTextName: {height: 40,backgroundColor:'#fff', elevation: 5, display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft:20, paddingRight:20, borderRadius:20},
+  textName: {color:'#000', fontSize: 20, fontWeight:'bold'},
   containerDaily: {
-    position:'relative'
+    backgroundColor: '#E4EFE7',
+    position:'relative',
+    paddingTop:20,
+    marginBottom:20
+  },
+  containerHourly: {
+    backgroundColor:'#B1D0E0'
   },
   containButton: {display:'flex', alignItems: 'center',justifyContent: 'center', flexDirection:'row'},
   containButtonText: {width: 150, backgroundColor:'rgba(255,255,255,0.1)', borderRadius: 20, padding:5, margin: 10},

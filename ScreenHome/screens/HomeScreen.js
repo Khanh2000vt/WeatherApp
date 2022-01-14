@@ -14,10 +14,11 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Details from './component/Details';
+import PushNotification from "react-native-push-notification";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 const {height, width} = Dimensions.get('window');
 const APIKEY = '1ab622d7b5732550a1ba64acf09920cf';
-
+const background = require('../source/daycloud.png')
 export default function HomeScreen({navigation}) {
   // useState hooks
   const [homeData, setHomeData] = useState([]);
@@ -43,6 +44,7 @@ export default function HomeScreen({navigation}) {
     fetchHomeData()
     .then(response => response.json())
     .then(data => {
+      createChannels();
       setHomeData(data.current);
       const weather = data.current.weather;
       setWeather(weather);
@@ -97,11 +99,62 @@ export default function HomeScreen({navigation}) {
         console.log("Thoi tiet theo gio:" + hourlyArray);
         setSevenWeathers(dailyArray);
         console.log("Thoi tiet theo ngay:" + dailyArray);
+        handleNotification(data?.current?.weather?.name, data?.current?.weather, data?.current?.AQI);
     })
     .catch(err => {
       console.log(err)
     })
   }, []);
+
+  const createChannels = () => {
+    PushNotification.createChannel(
+      {
+        channelId: "weather-channel",
+        channelName: "Weather Channel"
+      }
+    )
+    PushNotification.createChannel(
+      {
+        channelId: "AQI-channel",
+        channelName: "AQI Channel"
+      }
+    )
+  }
+
+  const handleNotification = (location, weather, AQI) => {
+    let infoAQI = "";
+    if(AQI?.list[0]?.main?.aqi === 1) infoAQI = "Good";
+    if(AQI?.list[0]?.main?.aqi === 2) infoAQI = "Fair";
+    if(AQI?.list[0]?.main?.aqi === 3) infoAQI = "Moderate";
+    if(AQI?.list[0]?.main?.aqi === 4) infoAQI = "Unhealthy";
+    if(AQI?.list[0]?.main?.aqi === 5) infoAQI = "Very Unhealthy";
+
+    PushNotification.cancelAllLocalNotifications();
+    PushNotification.localNotification(
+      {
+        channelId: "AQI-channel",
+        title: `Chất lượng không khí ${location}`,
+        message: `
+        AQI: ${AQI?.list[0]?.main?.aqi} 
+        ${infoAQI} `,
+        smallIcon: "ic_aqi",
+      }
+    )
+    PushNotification.localNotification(
+      {
+      channelId:"weather-channel",
+      title: `Thông tin thời tiết ${location}`,
+      message: 
+      `
+      Thời tiết: ${weather?.weather[0]?.description}
+      Nhiệt độ: ${Math.ceil(weather?.main?.temp -273.15)}°C
+      Độ ẩm: ${weather?.main?.humidity}%
+      Tốc độ gió: ${weather?.wind?.speed}km/h
+      `,
+      smallIcon: "ic_weather",
+    }
+    )
+  }
 
   // Other function and constant
   const today = new Date();
@@ -125,9 +178,9 @@ export default function HomeScreen({navigation}) {
   return (
       <View style={styles.background}>
         {typeof weather.main != 'undefined' ? (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{backgroundColor: 'rgb(246,235,216)'}}>
+          <ImageBackground source={background} resizeMode='cover' style={{flex: 1}}>
+            <ScrollView
+            showsVerticalScrollIndicator={false}>
             <View style={styles.homeScreen}>
               <Text style={styles.titleLocal}>{weather.name}</Text>
               <View
@@ -184,18 +237,18 @@ export default function HomeScreen({navigation}) {
                         source={{
                           uri: `http://openweathermap.org/img/w/${item.weather[0].icon}.png`,
                         }}></Image>
-                      <Text style={{color: '#343432', fontSize: 20}}>
+                      <Text style={{color: '#000', fontSize: 25}}>
                         {Math.ceil(item.main.temp - 273.15)}°
                       </Text>
                       <Text
                         style={{
-                          color: '#343432',
+                          color: '#000',
                           fontSize: 14,
                           marginBottom: 10,
                         }}>
                         {item.weather[0].main}
                       </Text>
-                      <Text style={{color: '#343432', fontSize: 10}}>
+                      <Text style={{color: '#000', fontSize: 10}}>
                         {item.dt_txt.slice(8, 10)}-{item.dt_txt.slice(5, 7)}-
                         {item.dt_txt.slice(0, 4)}
                       </Text>
@@ -213,10 +266,10 @@ export default function HomeScreen({navigation}) {
                   renderItem={({item}) => (
                     <TouchableOpacity style={styles.oneHour}>
                       <View>
-                        <Text style={{color: '#343432', fontSize: 20}}>
+                        <Text style={{color: '#000', fontSize: 20}}>
                           {item.dt_txt.slice(11, 16)}
                         </Text>
-                        <Text style={{color: '#343432', fontSize: 12}}>
+                        <Text style={{color: '#000', fontSize: 12, fontStyle: 'italic'}}>
                           {item.weather[0].description}
                         </Text>
                       </View>
@@ -234,7 +287,7 @@ export default function HomeScreen({navigation}) {
                           source={{
                             uri: `http://openweathermap.org/img/w/${item.weather[0].icon}.png`,
                           }}></Image>
-                        <Text style={{color: '#343432', fontSize: 20}}>
+                        <Text style={{color: '#000', fontSize: 25}}>
                           {Math.ceil(item.main.temp - 273.15)}°
                         </Text>
                       </View>
@@ -254,7 +307,7 @@ export default function HomeScreen({navigation}) {
             </View>
 
             {/* Chi tiết thời tiết */}
-            <View>
+            {/* <View>
               <Modal
                 visible={showModal}
                 transparent={true}
@@ -274,8 +327,9 @@ export default function HomeScreen({navigation}) {
                     }}></View>
                 </View>
               </Modal>
-            </View>
+            </View> */}
           </ScrollView>
+          </ImageBackground>
         ) : (
           <View style={{display:'flex',height:height, justifyContent: 'center', alignItems: 'center'}}>
         <ActivityIndicator size="large" color="#ed6c78" />
@@ -295,7 +349,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   homeScreen: {
-    backGroundColor: 'rgb(246,235,216)',
     padding: 10,
     flex: 1,
   },
@@ -307,22 +360,22 @@ const styles = StyleSheet.create({
     width: width,
   },
   textHeaderNav: {
-    color: '#343432',
+    color: '#000',
     fontSize: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#343432',
+    borderBottomColor: '#000',
   },
   background: {
-    backGroundColor: 'rgb(246,235,216)',
     flex: 1,
   },
   titleLocal: {
     fontSize: 24,
-    color: '#343432',
+    color: '#000',
     alignSelf: 'center',
+    fontWeight:'bold'
   },
   iconDetails: {
-    color: '#343432',
+    color: '#000',
     alignSelf: 'center',
   },
   temperature: {
@@ -331,21 +384,21 @@ const styles = StyleSheet.create({
   },
   temperatureData: {
     fontSize: 100,
-    color: '#343432',
+    color: '#000',
   },
   temperatureUnit: {
     fontSize: 25,
-    color: '#343432',
+    color: '#000',
   },
   weatherDescription: {
     fontSize: 22,
-    color: '#343432',
+    color: '#000',
     alignSelf: 'center',
     marginBottom: 10,
   },
   updateTime: {
     fontSize: 10,
-    color: '#343432',
+    color: '#000',
     alignSelf: 'center',
     fontStyle: 'italic',
   },
@@ -354,9 +407,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     flexWrap: 'wrap',
     borderRadius: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     padding: 10,
-    marginTop: 10,
+    marginTop: 10
   },
   containerToday: {
     flexDirection: 'row',
@@ -377,7 +430,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 30,
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -398,6 +451,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     marginBottom: 10,
+    backgroundColor: 'rgba(255, 255,255, 0.5)',
+    borderRadius: 10,
   },
   oneRow: {
     display: 'flex',
@@ -405,7 +460,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   textDayDetails: {
-    color: '#343432',
+    color: '#000',
     fontSize: 15,
   }
 });

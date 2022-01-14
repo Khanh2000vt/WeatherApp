@@ -23,12 +23,12 @@ const styles = StyleSheet.create({
   },
   titleInformation: {
     fontSize: 10,
-    color: "#343432",
+    color: "#000",
     alignSelf: "center",
   },
   dataInformation: {
     fontSize: 12,
-    color: "#343432",
+    color: "#000",
     alignSelf: "center",
   },
 });
