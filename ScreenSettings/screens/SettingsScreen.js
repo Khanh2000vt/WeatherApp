@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   ScrollView,
   TouchableOpacity,
@@ -9,7 +8,7 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ListComponent from '../components/items/ListComponent';
 import {
@@ -17,16 +16,8 @@ import {
   optionsTemperature,
   optionsLocation,
 } from '../components/store/DataListComponent';
-import {ThemeContext} from '../../components/store/ThemeContext';
-// import {useTheme} from '../../components/hook/useTheme';
-
 export default function SettingsScreen({navigation}) {
-  const DARK = '#242526';
-  const LIGHT = '#fff';
-  const context = useContext(ThemeContext); // context
-  const isLight = context.isLight;
-  // const isLight = context.getDataTheme;
-  const [isEnabled, setIsEnabled] = useState(!isLight); // switch
+  const [isEnabled, setIsEnabled] = useState(false); // switch
 
   // list option
   const [notification, setNotification] = useState(optionsNotification);
@@ -38,46 +29,35 @@ export default function SettingsScreen({navigation}) {
     notification: 'Once a day',
     temperature: 'Celsius',
     location: 'Default Location',
+  });
 
-  })
-  useEffect(() => {
-    context.getDataTheme();
-    setIsEnabled(!isLight);
-  }, []);
+  // async function setDataTheme() {
+  //   const jsonValue = JSON.stringify(!isEnabled);
+  //   console.log('setData2: ', jsonValue);
+  //   await AsyncStorage.setItem('@storage_Key', jsonValue);
+  // }
 
-  useEffect(() => {
-    context.setData();
-    // setIsEnabled(!isLight);
-  },[isEnabled]);
+  // async function getDataTheme() {
+  //   try {
+  //     const jsonValue = await AsyncStorage.getItem('@storage_Key_Theme');
+  //     if (jsonValue != null) {
+  //       const initTheme = JSON.parse(jsonValue);
+  //       console.log('get: ', initTheme);
 
-
-  async function setData() {
-    const jsonValue = JSON.stringify(isEnabled);
-      console.log('setData2: ', jsonValue);
-      await AsyncStorage.setItem('@storage_Key', jsonValue);
-  }
-
-  async function getDataTheme() {
-    try {
-      const jsonValue = await AsyncStorage.getItem('@storage_Key_Theme');
-      if (jsonValue != null) {
-        const initTheme = JSON.parse(jsonValue);
-        // setIsLight(initTheme);
-        setIsEnabled(initTheme);
-      }
-    } catch (e) {
-      // error reading value
-    }
-  }
-
+  //       setIsEnabled(initTheme);
+  //     }
+  //   } catch (e) {
+  //     // error reading value
+  //   }
+  // }
 
   async function toggleSwitch() {
     try {
-      context.toggleTheme();
-      setIsEnabled(previousState => !previousState);
+      // setDataTheme();
     } catch (e) {
       // saving error
     }
+    setIsEnabled(previousState => !previousState);
   }
 
   function handlePressNotification() {
@@ -114,7 +94,7 @@ export default function SettingsScreen({navigation}) {
   function handleSelectNotification(itemSelect, indexSelect) {
     const optionNew = changeOption(indexSelect, notification);
     setOptionItem({
-      ... optionItem,
+      ...optionItem,
       notification: itemSelect.title,
     });
     setNotification([...optionNew]);
@@ -123,7 +103,7 @@ export default function SettingsScreen({navigation}) {
   function handleSelectTemperature(itemSelect, indexSelect) {
     const optionNew = changeOption(indexSelect, temperature);
     setOptionItem({
-      ... optionItem,
+      ...optionItem,
       temperature: itemSelect.title,
     });
     setTemperature([...optionNew]);
@@ -132,14 +112,14 @@ export default function SettingsScreen({navigation}) {
   function handleSelectLocation(itemSelect, indexSelect) {
     const optionNew = changeOption(indexSelect, location);
     setOptionItem({
-      ... optionItem,
+      ...optionItem,
       location: itemSelect.title,
     });
     setLocation([...optionNew]);
   }
 
   return (
-    <ScrollView style={{backgroundColor: isLight ? LIGHT : DARK}}>
+    <ScrollView style={{}}>
       <ListComponent
         onPress={handlePressNotification}
         icon="notifications-outline"
@@ -161,16 +141,16 @@ export default function SettingsScreen({navigation}) {
         option={optionItem.location}
       />
 
-      <View style={[styles.containerItem, isLight && styles.itemEven]}>
+      <View style={styles.containerItem}>
         <Ionicons name="star-half-outline" size={20} color="gray" />
-        <Text style={[styles.textItem, {color: isLight ? DARK : LIGHT}]}>
+        <Text style={styles.textItem}>
           Choose dark mode in
         </Text>
         <Switch
           trackColor={{false: '#767577', true: '#81b0ff'}}
           thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
-          style={[styles.switchItem, isLight && styles.itemEven]}
+          style={styles.switchItem}
           onValueChange={toggleSwitch}
           value={isEnabled}
         />
@@ -180,16 +160,16 @@ export default function SettingsScreen({navigation}) {
         onPress={() => navigation.navigate('HelpScreen')}
         style={styles.containerItem}>
         <Ionicons name="help-circle-outline" size={20} color="gray" />
-        <Text style={[styles.textItem, {color: isLight ? DARK : LIGHT}]}>
+        <Text style={styles.textItem}>
           Help
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         onPress={() => navigation.navigate('AboutScreen')}
-        style={[styles.containerItem, isLight && styles.itemEven]}>
+        style={styles.containerItem}>
         <Ionicons name="information-circle-outline" size={20} color="gray" />
-        <Text style={[styles.textItem, {color: isLight ? DARK : LIGHT}]}>
+        <Text style={styles.textItem}>
           About
         </Text>
       </TouchableOpacity>

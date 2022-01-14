@@ -1,23 +1,21 @@
 /* eslint-disable prettier/prettier */
-import React, {useContext} from 'react';
+import React from 'react';
 import {TouchableHighlight, Text, View, StyleSheet} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { ThemeContext } from '../../../components/store/ThemeContext';
 export default function ListComponent(props) {
-  const DARK = '#242526';
-  const LIGHT = '#fff';
-  const context = useContext(ThemeContext); // context
-  const isLight = context.isLight;
-
   function handleOnPress() {
     props.onPress();
   }
+
   return (
     <TouchableHighlight
       onPress={handleOnPress}
       activeOpacity={0.7}
       underlayColor="#DDDDDD">
-      <View style={[styles.containerItem, {backgroundColor: isLight ? LIGHT : DARK}]}>
+      <View
+        style={[
+          styles.containerItem,
+        ]}>
         <View style={styles.container}>
           <Ionicons
             name={props.icon}
@@ -26,7 +24,9 @@ export default function ListComponent(props) {
             style={styles.icon}
           />
           <View style={styles.textContainer}>
-            <Text style={[styles.textItem, {color: isLight ? DARK : LIGHT}]}>{props.title}</Text>
+            <Text style={styles.textItem}>
+              {props.title}
+            </Text>
             <Text style={styles.textOptionSelected}>{props.option}</Text>
           </View>
         </View>

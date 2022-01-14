@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -9,14 +9,9 @@ import {
   ChartStackScreen,
   SettingsStackScreen,
 } from './components/store/index';
-import {ThemeContext} from './components/store/ThemeContext';
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  // const DARK = '#242526';
-  const LIGHT = '#fff';
-  const context = useContext(ThemeContext); // context
-  const isLight = context.isLight;
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -40,12 +35,12 @@ export default function App() {
             return <Ionicons name={iconName} size={18} color={color} />;
           },
 
-          tabBarActiveTintColor: isLight ? 'tomato' : LIGHT,
+          tabBarActiveTintColor: 'tomato',
           tabBarInactiveTintColor: 'gray',
           headerShown: false, // none title text
           tabBarHideOnKeyboard: true,
-          tabBarActiveBackgroundColor: isLight ? '#f8f8ff' : '#3c3c3c',
-          tabBarInactiveBackgroundColor: isLight ? LIGHT : 'black',
+          tabBarActiveBackgroundColor: '#f8f8ff',
+          tabBarInactiveBackgroundColor: 'blue',
         })}>
         <Tab.Screen name="Home" component={HomeStackScreen} />
         <Tab.Screen name="Favorite" component={FavoriteStackScreen} />
