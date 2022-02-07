@@ -1,2 +1,2 @@
 # Weather App
-## Video demo: https://weather-api-2021-100eggs.herokuapp.com/
+## Video demo: https://bitly.com.vn/allfvw
